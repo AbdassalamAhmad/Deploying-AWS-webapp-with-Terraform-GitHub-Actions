@@ -4,8 +4,8 @@
 ![Infrastructure](./assests/AWS-Three-Tier-Architecture.jpg)
 
 ## Project Description
-- Dockerize a Flask app (Monty Hall Game) and push it to AWS Elastic Container Registry.
-- Deploy AWS Infrastructure using terraform modules.
+- Dockerize a Flask app (Monty Hall Game) and push it to AWS Elastic Container Registry (ECR).
+- Deploy AWS Infrastructure using Terraform modules.
 - Provision EC2 Instances and pull latest Docker image and run it.
 - Finally: You will have a container running flask app on 2 EC2 Instances behind Application Load Balancer.
 
@@ -14,7 +14,7 @@
 1. Terraform (IaC): To deploy AWS Infrastructure resources using Terraform modules.
 2. AWS Resources:
 	- VPC (2 Public Subnets, 4 Private Subnets, Elastic IP, Nat Gateway, Internet Gateway).
-	- 3 EC2 Instances, and Application Load Balancer.
+	- 3 EC2 Instances (two for hosting the app and bastion host to ssh), and Application Load Balancer.
 	- RDS, and Elasticache.
 	- S3 and Dynamodb: to store state file and lock it.
 	- Security Groups.
