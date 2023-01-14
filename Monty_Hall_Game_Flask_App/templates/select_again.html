@@ -1,0 +1,67 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <title>Change your mind?</title>
+<style>
+body {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    height: 100vh;
+}
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+ 
+    50% {
+        background-position: 100% 50%;
+    }
+ 
+    100% {
+        background-position: 0% 50%;
+    }
+}
+div {
+	font-size: 100%; /* 18px */
+	color: #FFFFFF;
+}
+</style>
+</head>
+<body>
+<div>
+    
+    
+    <form action="/result" method="POST">
+    <center><h1>You have selected door number {{ selected }}</h1></center>
+
+   <center><h2>The door {{ opened }} has been opened and it has a goat.</h2></center> 
+
+    <center><h2>NOW, do you want to change your mind? OR stick with your old choice.</h2></center>
+	<br>
+    {% for i in [1, 2, 3] %}
+        <center><input type="radio" name="door" value="{{ i }}" 
+            {% if selected==i %} checked {% endif %} 
+            {% if opened==i %} disabled {% endif %} ></center>
+            
+            {% if opened==i %}
+            <center><img src="./static/goat_lost.jpg"></center>
+            {% else %}
+           <center><img src="./static/door{{ i }}.jpg"></center>
+            {% endif %}
+            
+        </input>
+        <br>
+        <br>
+    {% endfor %}
+    <center><input type="submit" value="Let's go"></center>
+</form>
+
+</div>   
+
+<div class="d-flex flex-column justify-content-center w-100 h-100"></div>
+
+</body>
+</html>

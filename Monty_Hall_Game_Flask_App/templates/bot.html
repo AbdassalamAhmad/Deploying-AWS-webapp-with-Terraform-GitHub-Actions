@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <title>BOT</title>
+<style>
+body {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    height: 100vh;
+}
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+ 
+    50% {
+        background-position: 100% 50%;
+    }
+ 
+    100% {
+        background-position: 0% 50%;
+    }
+}
+div {
+	font-size: 100%; /* 18px */
+	color: #FFFFFF;
+}
+</style>
+</head>
+<body>
+<div>
+    <h2>When Bot changed his choice EVERYTIME: </h2>
+<h3>Bot Has Won {{ sum_of_prize_changed }} times of {{ num_of_tries }} tries.</h3>
+<h3>Percentage of winning is : {{ Percentage_of_winning_changed }} % (Always around 66%)</h3>
+
+
+<h2>When Bot NEVER changed his choice: </h2>
+<h3>Bot Has Won {{ sum_of_prize_not_changed }} times of {{ num_of_tries }} tries.</h3>
+<h3>Percentage of winning is : {{ Percentage_of_winning_not_changed }} % (Always around 33%)</h3>
+
+<h4><b>Note: </b>Refresh the page to see how the numbers are changing.</h4>
+</div>
+
+
+
+<div class="d-flex flex-column justify-content-center w-100 h-100"></div>
+
+</body>
+</html>
+
+
+
+
