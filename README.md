@@ -1,4 +1,4 @@
-# Deploying-AWS-3-tier-Webapp-with-Terraform-Docker-GitHub-Actions-CI-CD-Pipeline
+# Deploying AWS 3-Tier Webapp with Terraform, Docker, and GitHub Actions (CI/CD) Pipeline
 
 ## Project Structure
 ![Infrastructure](./assests/AWS-Three-Tier-Architecture.jpg)
