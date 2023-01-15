@@ -57,17 +57,18 @@ jobs:
         terraform fmt -check
       working-directory: ./Terraform
 
-    - name: Skip All When Destroy
-      if: env.TRIGGER == 'destroy'
-      run: exit 1
-
     - name: Terraform ${{ env.TRIGGER }}
       id: apply-or-destroy # id only can have static name not changing name.
       run: |-
         terraform $TRIGGER \
         -var="public_key=$EC2_PUBLIC_SSH_KEY" \
+        -var="key_name=bastion" \
         -auto-approve
       working-directory: ./Terraform
+
+    - name: Skip Rest of Steps When Destroy
+      if: env.TRIGGER == 'destroy'
+      run: exit 0
 
     - name: Set Output 1
       if: env.TRIGGER == 'apply'
