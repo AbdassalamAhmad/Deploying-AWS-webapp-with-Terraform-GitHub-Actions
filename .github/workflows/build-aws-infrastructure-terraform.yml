@@ -66,16 +66,15 @@ jobs:
         -auto-approve
       working-directory: ./Terraform
 
-    - name: Skip Rest of Steps When Destroy
-      if: env.TRIGGER == 'destroy'
-      run: exit 0
 
     - name: Set Output 1
+      if: env.TRIGGER == 'apply'
       id: get-private-ip
       run: echo "ec2_private_ip=$(terraform output application_private_ip_1)" >> $GITHUB_OUTPUT 
       working-directory: ./Terraform
    
     - name: Set Output 2
+      if: env.TRIGGER == 'apply'
       id: get-public-ip
       run: echo "bastion_public_ip=$(terraform output bastion_public_ip)" >> $GITHUB_OUTPUT 
       working-directory: ./Terraform
@@ -88,27 +87,27 @@ jobs:
     needs: build-aws-infra
     steps:
 
-    - name: Skip Rest of Steps When Destroy
-      if: env.TRIGGER == 'destroy'
-      run: exit 0
-    
     # This step is to be able to run "destroy bastion" step
     - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Set Private IP to Env Variables
+      if: env.TRIGGER == 'apply'
       run: echo EC2_PRIVATE_IP=${{ needs.build-aws-infra.outputs.EC2_PRIVATE_IP }} >> $GITHUB_ENV
 
     - name: Set Public IP to Env Variables
+      if: env.TRIGGER == 'apply'
       run: echo BASTION_PUBLIC_IP=${{ needs.build-aws-infra.outputs.BASTION_PUBLIC_IP }} >> $GITHUB_ENV
           
     - name: Login to AWS ECR Public
+      if: env.TRIGGER == 'apply'
       id: login-ecr-public
       uses: aws-actions/amazon-ecr-login@v1    
       with:
         registry-type: public
     
     - name: Build and Push Docker Image
+      if: env.TRIGGER == 'apply'
       env:
         REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
         REGISTRY_ALIAS: g4x4w1s3
@@ -123,7 +122,7 @@ jobs:
     
     
     - name: Deploy docker image to EC2
-      if: env.TRIGGER == 'first'
+      if: env.TRIGGER == 'apply'
       env:
         REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
         REGISTRY_ALIAS: g4x4w1s3
@@ -157,6 +156,7 @@ jobs:
     #   working-directory: ./Terraform
     # Optional step to lower some cost after operation.
     - name: Terraform Destroy Bastion Host
+      if: env.TRIGGER == 'apply' # when TRIGGER = 'yes' don't run this because it's already destroyed.
       id: destroy-bastion-host
       run: |
         terraform destroy -target="aws_instance.bastion_instance_1" \
