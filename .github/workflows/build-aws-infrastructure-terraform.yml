@@ -22,22 +22,24 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS User Credentials.
   EC2_PRIVATE_SSH_KEY: ${{ secrets.AWS_EC2_SSH_PRIVATE_KEY }} # Used to ssh into EC2.
   EC2_PUBLIC_SSH_KEY: ${{ secrets.AWS_SSH_PUBLIC_KEY }} # Used to upload public key to aws.
-  TF_VAR_ami: ${{ secrets.TF_VAR_AMI }}  # we will use it in two jobs.
-  #TRIGGER: 'apply' # Make it 'apply' to build AWS infra, and 'destroy' to destroy it all. "auto_workflow"
+  TF_VAR_ami: ${{ secrets.TF_VAR_AMI }}  # trying different way to reference variables. we will use it in two jobs.
+  AWS_REGION: us-east-1 # just to be used in ECR but every thing else in eu-south-1
+  #TRIGGER: 'apply' # Make it 'apply' to build AWS infra, and 'destroy' to destroy it all. "auto_workflow (on Push)"
   TRIGGER: '${{ inputs.trigger }}' # "manual workflow"
 
 jobs:
   build-aws-infra:
     runs-on: ubuntu-latest
     
-    outputs: # used to reference in later job
+    outputs: # used to reference in Second job
       EC2_PRIVATE_IP: ${{ steps.get-private-ip.outputs.ec2_private_ip}} 
       BASTION_PUBLIC_IP: ${{ steps.get-public-ip.outputs.bastion_public_ip}}
        
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-        
+    
+    # Unnecessary step, because terraform is already installed on GitHub runner    
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
       with:
@@ -55,6 +57,10 @@ jobs:
         terraform fmt -check
       working-directory: ./Terraform
 
+    - name: Skip All When Destroy
+      if: env.TRIGGER == 'destroy'
+      run: exit 1
+
     - name: Terraform ${{ env.TRIGGER }}
       id: apply-or-destroy # id only can have static name not changing name.
       run: |-
@@ -66,18 +72,18 @@ jobs:
     - name: Set Output 1
       if: env.TRIGGER == 'apply'
       id: get-private-ip
-      run: echo "ec2_private_ip=$(terraform output application_private_ip_1)" >> $GITHUB_OUTPUT # new way of outputs
+      run: echo "ec2_private_ip=$(terraform output application_private_ip_1)" >> $GITHUB_OUTPUT 
       working-directory: ./Terraform
    
     - name: Set Output 2
       if: env.TRIGGER == 'apply'
       id: get-public-ip
-      run: echo "bastion_public_ip=$(terraform output bastion_public_ip)" >> $GITHUB_OUTPUT # new way of outputs
+      run: echo "bastion_public_ip=$(terraform output bastion_public_ip)" >> $GITHUB_OUTPUT 
       working-directory: ./Terraform
       # echo "{name}={value}" >> $GITHUB_OUTPUT # new way of outputs
 
 
-  # New Job
+  # Second Job
   configure-aws-infra:
     runs-on: ubuntu-latest
     needs: build-aws-infra
@@ -87,14 +93,42 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: set private IP to env variables
+    - name: Set Private IP to Env Variables
       if: env.TRIGGER == 'apply'
       run: echo EC2_PRIVATE_IP=${{ needs.build-aws-infra.outputs.EC2_PRIVATE_IP }} >> $GITHUB_ENV
 
-    - name: set public IP to env variables
+    - name: Set Public IP to Env Variables
       if: env.TRIGGER == 'apply'
       run: echo BASTION_PUBLIC_IP=${{ needs.build-aws-infra.outputs.BASTION_PUBLIC_IP }} >> $GITHUB_ENV
           
+    - name: Login to AWS ECR Public
+      if: env.TRIGGER == 'apply'
+      id: login-ecr-public
+      uses: aws-actions/amazon-ecr-login@v1    
+      with:
+        registry-type: public
+    
+    - name: Build and Push Docker Image
+      if: env.TRIGGER == 'apply'
+      env:
+        REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+        REGISTRY_ALIAS: g4x4w1s3
+        REPOSITORY: Monty-Hall-Game
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+        docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+      working-directory: ./Monty_Hall_Game_Flask_App
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     - name: ssh into private EC2
       if: env.TRIGGER == 'apply'
       uses: appleboy/ssh-action@v0.1.6
@@ -114,12 +148,8 @@ jobs:
 # instead of running script, run Ansible playbook.          
     
     
-    TRY to remove these two steps
-    # - name: setup terraform
-    #   uses: hashicorp/setup-terraform@v1
-    #   with:
-    #     terraform_wrapper: false
- 
+    #TRY to remove this step
+
     # - name: Terraform Init
     #   id: init
     #   run: terraform init
