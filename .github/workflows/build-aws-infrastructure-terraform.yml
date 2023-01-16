@@ -118,10 +118,7 @@ jobs:
         docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
       working-directory: ./Monty_Hall_Game_Flask_App
     
-    
-    
-    
-    - name: Deploy docker image to EC2
+    - name: SSH into EC2 & Deploy Latest Docker Image into it
       if: env.TRIGGER == 'apply'
       env:
         REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
@@ -145,8 +142,9 @@ jobs:
           sudo service docker start
           sudo docker pull $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
           sudo docker run -d --name ECR-Container -p 80:5000 $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
-# instead of running script, run Ansible playbook.          
-    
+# instead of running script, run Ansible playbook.    
+# Note: run this command when applying for the second time.      
+# sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm &&
     
     #TRY to remove this step
 
