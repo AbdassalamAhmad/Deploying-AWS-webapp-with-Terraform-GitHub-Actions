@@ -62,7 +62,7 @@ jobs:
       run: |-
         terraform $TRIGGER \
         -var="public_key=$EC2_PUBLIC_SSH_KEY" \
-        -var="key_name=bastion" \
+        -var="key_name=ssh_key_aws" \
         -auto-approve
       working-directory: ./Terraform
 
@@ -158,6 +158,6 @@ jobs:
       run: |
         terraform destroy -target="aws_instance.bastion_instance_1" \
         -var="public_key=$EC2_PUBLIC_SSH_KEY" \
-        -var="key_name=bastion" \
+        -var="key_name=ssh_key_aws" \
         -auto-approve        
       working-directory: ./Terraform
