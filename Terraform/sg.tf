@@ -8,7 +8,7 @@ resource "aws_security_group" "InstanceSG" {
   vpc_id = module.network.my_vpc_id
 
   ingress {
-    description     = "allow http from ALL"
+    description     = "allow http from ALB only"
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
@@ -18,6 +18,7 @@ resource "aws_security_group" "InstanceSG" {
 
   # Allow inbound traffic on port 22 (SSH)
   ingress {
+    description     = "allow ssh from Bastion host only"
     from_port       = 22
     to_port         = 22
     protocol        = "tcp"
