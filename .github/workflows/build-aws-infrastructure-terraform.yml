@@ -126,7 +126,6 @@ jobs:
         REPOSITORY: Monty-Hall-Game
         IMAGE_TAG: ${{ github.sha }}
         AWS_DEFAULT_REGION: us-east-1
-
       uses: appleboy/ssh-action@master
       with:
         host: ${{ env.EC2_PRIVATE_IP }}
@@ -135,7 +134,7 @@ jobs:
         proxy_host: ${{ env.BASTION_PUBLIC_IP }}
         proxy_username: ec2-user
         proxy_key: ${{ env.EC2_PRIVATE_SSH_KEY }}
-        envs: EC2_PRIVATE_SSH_KEY,REGISTRY,REGISTRY_ALIAS,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
+        envs: EC2_PRIVATE_SSH_KEY,EC2_PRIVATE_IP,REGISTRY,REGISTRY_ALIAS,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
         script: |-
           sudo yum update -y
           sudo amazon-linux-extras install docker -y
@@ -159,6 +158,6 @@ jobs:
       run: |
         terraform destroy -target="aws_instance.bastion_instance_1" \
         -var="public_key=$EC2_PUBLIC_SSH_KEY" \
-        -auto-approve
-            
+        -var="key_name=bastion" \
+        -auto-approve        
       working-directory: ./Terraform
