@@ -145,12 +145,11 @@ jobs:
 # Note: run this command when applying for the second time.      
 # sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm &&
     
-    #TRY to remove this step
-
-    # - name: Terraform Init
-    #   id: init
-    #   run: terraform init
-    #   working-directory: ./Terraform
+    - name: Terraform Init
+      id: init
+      run: terraform init
+      working-directory: ./Terraform
+      
     # Optional step to lower some cost after operation.
     - name: Terraform Destroy Bastion Host
       if: env.TRIGGER == 'apply' # when TRIGGER = 'yes' don't run this because it's already destroyed.
