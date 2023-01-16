@@ -111,7 +111,7 @@ jobs:
       env:
         REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
         REGISTRY_ALIAS: g4x4w1s3
-        REPOSITORY: Monty-Hall-Game
+        REPOSITORY: monty-hall-game
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
@@ -123,7 +123,7 @@ jobs:
       env:
         REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
         REGISTRY_ALIAS: g4x4w1s3
-        REPOSITORY: Monty-Hall-Game
+        REPOSITORY: monty-hall-game
         IMAGE_TAG: ${{ github.sha }}
         AWS_DEFAULT_REGION: us-east-1
       uses: appleboy/ssh-action@master
