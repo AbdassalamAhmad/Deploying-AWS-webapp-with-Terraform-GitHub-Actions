@@ -1,4 +1,4 @@
-name: Build AWS Infrastructure and Deploy Dockerized Flask-App on it with ansible.
+name: Using Ansible, Build AWS Infrastructure and Deploy Dockerized Flask-App on it.
 
 on:
   # push:
