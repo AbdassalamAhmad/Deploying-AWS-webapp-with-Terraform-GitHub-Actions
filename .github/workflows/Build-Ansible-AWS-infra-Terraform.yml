@@ -135,29 +135,29 @@ jobs:
     
     
     
-    - name: SSH into EC2 & Deploy Latest Docker Image into it
-      if: env.TRIGGER == 'apply'
-      env:
-        REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-        REGISTRY_ALIAS: g4x4w1s3
-        REPOSITORY: monty-hall-game
-        IMAGE_TAG: ${{ github.sha }}
-        AWS_DEFAULT_REGION: us-east-1
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ env.EC2_PRIVATE_IP }}
-        username: ec2-user
-        key: ${{ env.EC2_PRIVATE_SSH_KEY }}
-        proxy_host: ${{ env.BASTION_PUBLIC_IP }}
-        proxy_username: ec2-user
-        proxy_key: ${{ env.EC2_PRIVATE_SSH_KEY }}
-        envs: EC2_PRIVATE_SSH_KEY,EC2_PRIVATE_IP,REGISTRY,REGISTRY_ALIAS,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
-        script: |-
-          sudo yum update -y
-          sudo amazon-linux-extras install docker -y
-          sudo service docker start
-          sudo docker pull $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
-          sudo docker run -d --name ECR-Container -p 80:5000 $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+    # - name: SSH into EC2 & Deploy Latest Docker Image into it
+    #   if: env.TRIGGER == 'apply'
+    #   env:
+    #     REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+    #     REGISTRY_ALIAS: g4x4w1s3
+    #     REPOSITORY: monty-hall-game
+    #     IMAGE_TAG: ${{ github.sha }}
+    #     AWS_DEFAULT_REGION: us-east-1
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: ${{ env.EC2_PRIVATE_IP }}
+    #     username: ec2-user
+    #     key: ${{ env.EC2_PRIVATE_SSH_KEY }}
+    #     proxy_host: ${{ env.BASTION_PUBLIC_IP }}
+    #     proxy_username: ec2-user
+    #     proxy_key: ${{ env.EC2_PRIVATE_SSH_KEY }}
+    #     envs: EC2_PRIVATE_SSH_KEY,EC2_PRIVATE_IP,REGISTRY,REGISTRY_ALIAS,REPOSITORY,IMAGE_TAG,AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_DEFAULT_REGION,AWS_REGION
+    #     script: |-
+    #       sudo yum update -y
+    #       sudo amazon-linux-extras install docker -y
+    #       sudo service docker start
+    #       sudo docker pull $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+    #       sudo docker run -d --name ECR-Container -p 80:5000 $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
   
 # Note: run this command when applying for the second time.      
 # sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm &&
