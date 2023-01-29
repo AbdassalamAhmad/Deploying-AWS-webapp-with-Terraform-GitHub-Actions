@@ -130,7 +130,7 @@ jobs:
       run: |
         echo "$EC2_PRIVATE_SSH_KEY" > ssh_key_aws
         sudo chmod 400 ssh_key_aws
-        ssh -o ProxyCommand="ssh -i ssh_key_aws -W %h:%p -q ec2-user@$BASTION_PUBLIC_IP" -i ssh_key_aws ec2-user@$EC2_PRIVATE_IP -v
+        ssh -o ProxyCommand="ssh -i ssh_key_aws -W %h:%p -q ec2-user@15.161.89.237" -i ssh_key_aws ec2-user@10.0.3.14 -v
         touch hello
         ls -l
       working-directory: ./Ansible
