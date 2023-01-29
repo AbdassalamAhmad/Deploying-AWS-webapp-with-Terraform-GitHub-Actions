@@ -130,26 +130,26 @@ jobs:
       run: |
         echo "$EC2_PRIVATE_SSH_KEY" > ssh_key_aws.pem
         sudo chmod 400 ssh_key_aws.pem
-        ansible-playbook docker_playbook.yml --extra-vars "ansible_host=$EC2_PRIVATE_IP" 
+        ansible-playbook docker_playbook.yml --extra-vars "ansible_host=$EC2_PRIVATE_IP" -v
       working-directory: ./Ansible
     
     
 # Note: run this command when applying for the second time.      
 # sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm &&
     
-    - name: Terraform Init
-      if: env.TRIGGER == 'apply'
-      id: init
-      run: terraform init
-      working-directory: ./Terraform
+    # - name: Terraform Init
+    #   if: env.TRIGGER == 'apply'
+    #   id: init
+    #   run: terraform init
+    #   working-directory: ./Terraform
       
-    # Optional step to lower some cost after operation.
-    - name: Terraform Destroy Bastion Host
-      if: env.TRIGGER == 'apply' # when TRIGGER = 'destroy' don't run this because it's already destroyed.
-      id: destroy-bastion-host
-      run: |
-        terraform destroy -target="aws_instance.bastion_instance_1" \
-        -var="public_key=$EC2_PUBLIC_SSH_KEY" \
-        -var="key_name=ssh_key_aws" \
-        -auto-approve        
-      working-directory: ./Terraform
+    # # Optional step to lower some cost after operation.
+    # - name: Terraform Destroy Bastion Host
+    #   if: env.TRIGGER == 'apply' # when TRIGGER = 'destroy' don't run this because it's already destroyed.
+    #   id: destroy-bastion-host
+    #   run: |
+    #     terraform destroy -target="aws_instance.bastion_instance_1" \
+    #     -var="public_key=$EC2_PUBLIC_SSH_KEY" \
+    #     -var="key_name=ssh_key_aws" \
+    #     -auto-approve        
+    #   working-directory: ./Terraform
