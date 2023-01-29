@@ -128,9 +128,12 @@ jobs:
     - name: Run Ansible Playbook on Private EC2 Instance.
       if: env.TRIGGER == 'apply'
       run: |
-        echo "$EC2_PRIVATE_SSH_KEY" > ssh_key_aws.pem
-        sudo chmod 400 ssh_key_aws.pem
-        ls
+        echo "$EC2_PRIVATE_SSH_KEY" > ssh_key_aws
+        sudo chmod 400 ssh_key_aws
+        cat ansible.cfg
+        cat hosts
+        cat ssh_key_aws
+        ls -l
         ansible private -m file -a 'path=/var/tmp/ansible_test.txt state=touch' --extra-vars "ansible_host=$EC2_PRIVATE_IP" 
         ansible-playbook docker_playbook.yml --extra-vars "ansible_host=$EC2_PRIVATE_IP" -v
       working-directory: ./Ansible
