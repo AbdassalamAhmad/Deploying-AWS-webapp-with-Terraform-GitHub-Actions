@@ -124,6 +124,16 @@ jobs:
         sudo apt install software-properties-common
         sudo add-apt-repository --yes --update ppa:ansible/ansible
         sudo apt -y install ansible
+   
+    - name: try just ssh
+      if: env.TRIGGER == 'apply'
+      run: |
+        echo "$EC2_PRIVATE_SSH_KEY" > ssh_key_aws
+        sudo chmod 400 ssh_key_aws
+        ssh -o ProxyCommand="ssh -i ssh_key_aws -W %h:%p -q ec2-user@$BASTION_PUBLIC_IP" -i ssh_key_aws ec2-user@$EC2_PRIVATE_IP -v
+        touch hello
+        ls -l
+      working-directory: ./Ansible
 
     - name: Run Ansible Playbook on Private EC2 Instance.
       if: env.TRIGGER == 'apply'
@@ -138,6 +148,7 @@ jobs:
         ansible-playbook docker_playbook.yml --extra-vars "ansible_host=$EC2_PRIVATE_IP" -v
       working-directory: ./Ansible
     
+
     
 # Note: run this command when applying for the second time.      
 # sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm &&
