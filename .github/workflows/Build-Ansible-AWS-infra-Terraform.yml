@@ -105,17 +105,17 @@ jobs:
       with:
         registry-type: public
     
-    - name: Build and Push Docker Image
-      if: env.TRIGGER == 'apply'
-      env:
-        REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-        REGISTRY_ALIAS: g4x4w1s3
-        REPOSITORY: monty-hall-game
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
-        docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
-      working-directory: ./Monty_Hall_Game_Flask_App
+    # - name: Build and Push Docker Image
+    #   if: env.TRIGGER == 'apply'
+    #   env:
+    #     REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+    #     REGISTRY_ALIAS: g4x4w1s3
+    #     REPOSITORY: monty-hall-game
+    #     IMAGE_TAG: ${{ github.sha }}
+    #   run: |
+    #     docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
+    #     docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+    #   working-directory: ./Monty_Hall_Game_Flask_App
     
     - name: Install Ansible
       if: env.TRIGGER == 'apply'
@@ -130,6 +130,7 @@ jobs:
       run: |
         echo "$EC2_PRIVATE_SSH_KEY" > ssh_key_aws.pem
         sudo chmod 400 ssh_key_aws.pem
+        sudo touch ~/.ssh/known_hosts
         sudo ssh-keyscan $BASTION_PUBLIC_IP >> ~/.ssh/known_hosts
         ssh -o StrictHostKeyChecking=no -o ProxyCommand="ssh -i ssh_key_aws.pem -W %h:%p -q ec2-user@$BASTION_PUBLIC_IP" -i ssh_key_aws.pem ec2-user@$EC2_PRIVATE_IP
         ssh -o ProxyCommand="ssh -i ssh_key_aws.pem -W %h:%p -q ec2-user@$BASTION_PUBLIC_IP" -i ssh_key_aws.pem ec2-user@$EC2_PRIVATE_IP -v
