@@ -1,5 +1,5 @@
 - name: Install Docker on all private_ec2 and run latest image.
-  hosts: private_ec2
+  hosts: proxy
   become: true
   tasks:
     - name: Run Yum Update
